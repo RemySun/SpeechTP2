@@ -2,8 +2,44 @@ import numpy as np
 import pickle
 from helper_functions.levenshtein import *
 from scipy.spatial.distance import cosine
+import argparse
 
-path_to_data = './data/'
+parser = argparse.ArgumentParser(description='Process some arguments.')
+parser.add_argument('--split', default='dev',
+                    help='Data split to use')
+
+parser.add_argument('--lev_mult', default=0.5,type=int,
+                    help='Weight of spelling distance')
+parser.add_argument('--n_cores', default=22,type=int,
+                    help='Number of cpu cores to parallelize on')
+
+parser.add_argument('--evaluate', default=True, type = bool,
+                    help='Do we need to evaluate')
+
+
+parser.add_argument('--path_to_data', default='./data/',type=str,
+                    help='Where is the data ?')
+parser.add_argument('--input_path', default=None,type=str,
+                    help='Where is the input file ?')
+parser.add_argument('--pos_path', default=None,type=str,
+                    help='Where is the label file ?')
+
+parser.add_argument('--dynamic_input', default=None,type=str,
+                    help='If defined, feeds a sentence to the system.')
+
+
+args = parser.parse_args()
+
+print(args)
+
+split = args.split
+lev_mult = args.lev_mult
+evaluate = args.evaluate
+input_path = args.input_path
+pos_path = args.pos_path
+path_to_data = args.path_to_data
+n_cores = args.n_cores
+dynamic_input = args.dynamic_input
 
 polyglot = pickle.load(open(path_to_data + 'polyglot-fr.pkl','rb'),encoding='latin1')
 
@@ -12,16 +48,16 @@ polyglot = dict(zip(polyglot[0],polyglot[1]))
 lexicon = pickle.load(open(path_to_data + 'lexicon.p','rb'))
 known_words = list(lexicon.keys())
 
-split='dev'
-
-corpus = []
-with open(path_to_data + 'raw_{}.txt'.format(split),'r') as raw_file:
-    for sentence in raw_file:
-        corpus.append(sentence[:-1].split())
+if dynamic_input != None:
+    corpus = [dynamic_input.split()]
+else:
+    if not input_path:
+        input_path = path_to_data + 'raw_{}.txt'.format(split)
+    with open(input_path,'r') as raw_file:
+        for sentence in raw_file:
+            corpus.append(sentence[:-1].split())
 
 oov_forms = {}
-
-lev_mult=0.5
 
 i =0
 for sentence in corpus:
@@ -54,5 +90,5 @@ for sentence in corpus:
             oov_forms[token] = tag
 
 
-with open(path_to_data + 'oov_{}'.format(split),'wb+') as oov_file:
+with open(path_to_data + 'oov_{}_{}.p'.format(split,lev_mult),'wb+') as oov_file:
     pickle.dump(oov_forms,oov_file)
