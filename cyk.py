@@ -36,7 +36,7 @@ parser.add_argument('--dynamic_input', default=None,type=str,
 
 args = parser.parse_args()
 
-print(args)
+#print(args)
 
 split = args.split
 lev_mult = args.lev_mult
@@ -111,7 +111,7 @@ p=Pool(n_cores)
 
 parsed_trees = p.map(evaluate_sentence,corpus)
 
-print(time.time() - start)
+#print(time.time() - start)
 
 #### Evaluate ####
 
@@ -135,5 +135,10 @@ if evaluate:
                 if corpus[i][j] in lexicon:
                     minimum_match += 1
                 
-print("We got an accuracy of {} !".format(match/count))
-print("We got an accuracy of {} ! On stuff that was in the lexicon !".format(minimum_match/minimum_count))
+    print("We got an accuracy of {} !".format(match/count))
+    print("We got an accuracy of {} ! On stuff that was in the lexicon !".format(minimum_match/minimum_count))
+
+if dynamic_input != None:
+    print('( '+str(parsed_trees[0])+')')
+
+

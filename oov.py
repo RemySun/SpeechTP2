@@ -30,7 +30,7 @@ parser.add_argument('--dynamic_input', default=None,type=str,
 
 args = parser.parse_args()
 
-print(args)
+#print(args)
 
 split = args.split
 lev_mult = args.lev_mult
