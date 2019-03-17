@@ -10,10 +10,11 @@ def normalize_counts(counts):
     for key in counts:
         left_occurences = sum(counts[key].values())
 
-        for right_side in counts[key].keys():
+        for right_side in counts[key]:
             new_counts[key][right_side] /= left_occurences
 
-        return new_counts
+    return new_counts
+
 
 
 def extract_pcfg_tree(tree, pcfg, pl):
@@ -50,15 +51,25 @@ def extract_pcfg_tree(tree, pcfg, pl):
         else:
             pcfg[label][tuple(right_side)] += 1
 
+
+
+def clean_counts(counts):
+    """ Eliminate grammar entry for left side that do not occur
+    """
+    new_counts = deepcopy(counts)
+    for key in counts:
+        if not counts[key]:
+            del new_counts[key]
+
+    return new_counts
+
+
+
 def get_n_aries(cnf,n=1):
     """ Extract rules with right hand side of length n
     """
     n_aries = {left_side:{right_side: right_sides[right_side] for right_side in right_sides if len(right_side) == n} for left_side,right_sides in cnf.items()}
 
-    new_n_aries = deepcopy(n_aries)
-    for variable in n_aries:
-        if not n_aries[variable]:
-            del new_n_aries[variable]
-    n_aries = new_n_aries
+    n_aries = clean_counts(n_aries)
 
     return n_aries

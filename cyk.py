@@ -2,7 +2,6 @@ import numpy as np
 import pickle
 import time
 import numba
-from numba import jit
 import nltk
 
 from copy import deepcopy
@@ -45,6 +44,7 @@ for tag in pl:
         else:
             inv_pl[word] = {tag:pl[tag][word]}
 
+
 unaries = get_n_aries(cnf,n=1)
 binaries = get_n_aries(cnf,n=2)
 
@@ -53,12 +53,13 @@ binaries = get_n_aries(cnf,n=2)
 #### Parse the sentences in parallel ####
 
 start = time.time()
+
 def evaluate_sentence(sentence):
-    return cyk(sentence,unaries,binaries,inv_pl,pl)
+    return cyk(sentence,unaries,binaries,inv_pl,pl,cnf)
 
 p=Pool(8)
 
-parsed_trees = p.map(evaluate_sentence,corpus[:10])
+parsed_trees = p.map(evaluate_sentence,corpus[:40])
 
 print(time.time() - start)
 

@@ -27,12 +27,13 @@ def unroll(preds,current_cell,variables_symb,terminals_symb):
 
 
 
-def cyk(sentence,unaries,binaries,inv_pl,pl):
+def cyk(sentence,unaries,binaries,inv_pl,pl,cnf):
     """ Parse a sentence with the CYK algorithm, returns the parse tree given grammar cnf and grammar lexicon
     """
 
     # Define some mappings for convenience
-    variables_symb = dict(enumerate(list(binaries.keys()) + list(unaries.keys())))
+    #variables_symb = dict(enumerate(np.unique(list(binaries.keys()) + list(unaries.keys()))))
+    variables_symb = dict(enumerate(cnf))
     variables_idx = {symb:idx for (idx,symb) in variables_symb.items()}
 
     terminals_symb = dict(enumerate(pl))
@@ -68,8 +69,7 @@ def cyk(sentence,unaries,binaries,inv_pl,pl):
                 for variable in range(r):
                     if variables_symb[variable] in binaries:
                         right_sides = binaries[variables_symb[variable]]
-                        for right_side in right_sides:
-                            var1,var2 = right_side
+                        for var1, var2 in right_sides:
                             if probs[p,s,variables_idx[var1]] < np.inf and probs[l-p-1,s+p+1,variables_idx[var2]] < np.inf:
                                 prob_splitting = - np.log(right_sides[(var1,var2)]) + probs[p,s,variables_idx[var1]] + probs[l-p-1,s+p+1,variables_idx[var2]]
                                 if probs[l,s,variable] > prob_splitting:
@@ -128,7 +128,6 @@ def convert_cnf(pcfg,terminals):
             if len(right_side) > 1:
                 for symb in right_side:
                     if symb in terminals:
-                        print()
                         new_pcfg['TERM'+str(new_symb_count)] = {(symb,):1} #### CHECK COMPUTATION
                         new_rs.append('TERM'+str(new_symb_count))
                         new_symb_count += 1
@@ -152,12 +151,12 @@ def convert_cnf(pcfg,terminals):
                 unfolding_symbol = left_side
                 for symb in right_side[:-2]:
                     if unfolding_symbol == left_side:
-                        new_pcfg[unfolding_symbol][(symb,'BIN'+str(new_symb_count))] = pcfg[left_side][right_side] #### CHECK COMPUTATION needs to retake value for the first
+                        new_pcfg[unfolding_symbol][(symb,'BIN'+str(new_symb_count))] = pcfg[left_side][right_side] #### This is an entry point for the old rule
                     else:
-                        new_pcfg[unfolding_symbol] = {(symb,'BIN'+str(new_symb_count)):1} #### CHECK COMPUTATION needs to retake value for the first
+                        new_pcfg[unfolding_symbol] = {(symb,'BIN'+str(new_symb_count)):1} #### This is brand new symbol that only gets this rule
                     unfolding_symbol = 'BIN'+str(new_symb_count)
                     new_symb_count += 1
-                new_pcfg[unfolding_symbol] = {right_side[-2:]:1} #### CHECK COMPUTATION
+                new_pcfg[unfolding_symbol] = {right_side[-2:]:1} #### This is a brand new symbol that only gets this rule
                 del new_pcfg[left_side][right_side]
 
     pcfg = new_pcfg

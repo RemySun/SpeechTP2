@@ -1,13 +1,14 @@
-import levenshtein
+
 import pytest
 
 from helper_functions.cyk import *
+from helper_functions.levenshtein import *
 
 def test_levenshtein():
-    assert levenshtein.levenshtein('test','tilt') == 2
-    assert levenshtein.levenshtein('a','') == 1
-    assert levenshtein.levenshtein('a','a') == 0
-    assert levenshtein.levenshtein('a','abx') == 2
+    assert levenshtein('test','tilt') == 2
+    assert levenshtein('a','') == 1
+    assert levenshtein('a','a') == 0
+    assert levenshtein('a','abx') == 2
 
 def test_cnf():
     test_pcfg = {'NP':{('ADJ', 'N'): 0.6,('N',):0.4}, 'N':{('cat',):0.2,('dog',):0.8}}
