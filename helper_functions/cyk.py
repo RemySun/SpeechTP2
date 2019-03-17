@@ -17,6 +17,7 @@ def unroll(preds,current_cell,variables_symb,terminals_symb):
     if current_cell[0] == 0:
         level, position, variable = current_cell
         return nltk.Tree(variables_symb[current_cell[2]],[terminals_symb[preds[level,position,variable][0]]])
+        #return [terminals_symb[preds[level,position,variable][0]]]
 
     else:
         level, position, variable = current_cell
@@ -24,7 +25,7 @@ def unroll(preds,current_cell,variables_symb,terminals_symb):
         return nltk.Tree(variables_symb[variable],
                          [unroll(preds,(new_level,position,var1),variables_symb,terminals_symb),
                           unroll(preds,(level-new_level-1,position+new_level+1,var2),variables_symb,terminals_symb)])
-
+        #return unroll(preds,(new_level,position,var1),variables_symb,terminals_symb) + unroll(preds,(level-new_level-1,position+new_level+1,var2),variables_symb,terminals_symb)
 
 
 def cyk(sentence,unaries,binaries,inv_pl,pl,cnf):
@@ -40,7 +41,7 @@ def cyk(sentence,unaries,binaries,inv_pl,pl,cnf):
     terminals_idx = {symb:idx for (idx,symb) in terminals_symb.items()}
 
     n = len(sentence)
-    r = len(variables_symb)
+    r = len(cnf)
 
     # Collect the possible POS tags with associated probabilities P(word|tag)
     POS_tags = []

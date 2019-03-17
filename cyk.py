@@ -59,7 +59,7 @@ def evaluate_sentence(sentence):
 
 p=Pool(8)
 
-parsed_trees = p.map(evaluate_sentence,corpus[:40])
+parsed_trees = p.map(evaluate_sentence,corpus[:10])
 
 print(time.time() - start)
 
@@ -71,6 +71,7 @@ count = 0
 match = 0
 for i in range(len(parsed_trees)):
     POS_tags = parsed_trees[i].leaves()
+    #POS_tags = parsed_trees[i]
     for j in range(len(POS_tags)):
         count += 1
         if POS_tags[j] == labels[i][j]:
