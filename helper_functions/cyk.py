@@ -11,21 +11,21 @@ from copy import deepcopy
 ######################################
 
 
-def unroll(preds,current_cell,variables_symb,terminals_symb):
+def unroll(sentence,preds,current_cell,variables_symb,terminals_symb):
     """ Recursively unrolls the predecessor table given by CYK
     """
     if current_cell[0] == 0:
         level, position, variable = current_cell
-        return nltk.Tree(variables_symb[current_cell[2]],[terminals_symb[preds[level,position,variable][0]]])
-        #return [terminals_symb[preds[level,position,variable][0]]]
+        return nltk.Tree(variables_symb[current_cell[2]],[nltk.Tree(terminals_symb[preds[level,position,variable][0]],[sentence[position]])])
+
 
     else:
         level, position, variable = current_cell
         new_level, var1, var2 = preds[level,position,variable]
         return nltk.Tree(variables_symb[variable],
-                         [unroll(preds,(new_level,position,var1),variables_symb,terminals_symb),
-                          unroll(preds,(level-new_level-1,position+new_level+1,var2),variables_symb,terminals_symb)])
-        #return unroll(preds,(new_level,position,var1),variables_symb,terminals_symb) + unroll(preds,(level-new_level-1,position+new_level+1,var2),variables_symb,terminals_symb)
+                         [unroll(sentence,preds,(new_level,position,var1),variables_symb,terminals_symb),
+                          unroll(sentence,preds,(level-new_level-1,position+new_level+1,var2),variables_symb,terminals_symb)])
+
 
 
 def cyk(sentence,unaries,binaries,inv_pl,pl,cnf):
@@ -77,7 +77,7 @@ def cyk(sentence,unaries,binaries,inv_pl,pl,cnf):
                                     probs[l,s,variable] = prob_splitting
                                     preds[l,s,variable] = [p,variables_idx[var1],variables_idx[var2]]
 
-    return unroll(preds,(n-1,0,0),variables_symb,terminals_symb)
+    return unroll(sentence,preds,(n-1,0,0),variables_symb,terminals_symb)
 
 
 
