@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(description='Process some arguments.')
 parser.add_argument('--split', default='dev',
                     help='Data split to use')
 
-parser.add_argument('--lev_mult', default=0.5,type=int,
+parser.add_argument('--lev_mult', default=0.5,type=float,
                     help='Weight of spelling distance')
 parser.add_argument('--n_cores', default=22,type=int,
                     help='Number of cpu cores to parallelize on')
@@ -140,5 +140,9 @@ if evaluate:
 
 if dynamic_input != None:
     print('( '+str(parsed_trees[0])+')')
+else:
+    with open('evaluation_data.parser_output','w+') as raw_file:
+    for tree in parsed_trees:
+        raw_file.write('( '+str(tree)+')')
 
 

@@ -19,8 +19,8 @@ reader = BracketParseCorpusReader(path_to_data,r'.*\.mrg_strict')
 corpus = [sent for sent in reader.parsed_sents()]
 corpus_idx = [i for i in range(len(corpus))]
 
-np.random.seed(0)
-np.random.shuffle(corpus_idx)
+#np.random.seed(0)
+#np.random.shuffle(corpus_idx)
 
 #idx_train = corpus_idx[:]
 idx_train = corpus_idx[:int(len(corpus)*0.8)]

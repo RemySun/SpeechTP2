@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description='Process some arguments.')
 parser.add_argument('--split', default='dev',
                     help='Data split to use')
 
-parser.add_argument('--lev_mult', default=0.5,type=int,
+parser.add_argument('--lev_mult', default=0.5,type=float,
                     help='Weight of spelling distance')
 parser.add_argument('--n_cores', default=22,type=int,
                     help='Number of cpu cores to parallelize on')
@@ -51,6 +51,7 @@ known_words = list(lexicon.keys())
 if dynamic_input != None:
     corpus = [dynamic_input.split()]
 else:
+    corpus = []
     if not input_path:
         input_path = path_to_data + 'raw_{}.txt'.format(split)
     with open(input_path,'r') as raw_file:
